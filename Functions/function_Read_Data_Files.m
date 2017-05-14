@@ -3,7 +3,7 @@
 %r_data_set: the whole data set
 %r_pre_process_data_set: the data set has been pre-processsed
 %r_answer_set: the whole answer set
-function [r_data_set, r_pre_process_data_set,r_answer_set] = function_Read_Data_Files()
+function [r_data_set, r_pre_process_data_set,r_answer_set, r_data_label] = function_Read_Data_Files()
     %init a temporary data set
     t_data_set = [];
     t_pre_process_data_set = [];
@@ -28,4 +28,5 @@ function [r_data_set, r_pre_process_data_set,r_answer_set] = function_Read_Data_
     r_data_set = t_data_set;
     r_answer_set = t_answer_set;
     r_pre_process_data_set = t_pre_process_data_set;
+    r_data_label = ["airplane";"automobile";"bird";"cat";"deer";"dog";"frog";"horse";"ship";"truck"];
 end
