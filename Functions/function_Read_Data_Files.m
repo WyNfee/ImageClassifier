@@ -14,7 +14,7 @@ function [r_data_set, r_pre_process_data_set,r_answer_set, r_data_label] = funct
         t_data_file_name = sprintf('data_batch_%d.mat', i);
         t_data_file = load(t_data_file_name);
         t_data = t_data_file.data;
-        t_answer = t_data_file.labels;
+        t_answer = t_data_file.labels + 1;
         
         %preprocess read data
         t_pre_process_data = function_Preprocess_data(t_data);

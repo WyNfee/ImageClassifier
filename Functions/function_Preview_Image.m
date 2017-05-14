@@ -9,7 +9,7 @@ function function_Preview_Image(p_original_data, p_training_data,p_answer, p_ima
         %extract the image data from data set
         t_original_image_data = p_original_data(t_pickedIndex, :);
         t_training_image_data = p_training_data(t_pickedIndex, :);
-        t_answer = p_answer(t_pickedIndex)
+        t_answer = p_answer(t_pickedIndex);
         
         t_image_tensor = function_BuildImageTensor(t_original_image_data, p_image_channels);
         t_image_tensor2 = function_BuildImageTensor(t_training_image_data, p_image_channels);
@@ -17,7 +17,7 @@ function function_Preview_Image(p_original_data, p_training_data,p_answer, p_ima
         subplot(2,1,1);
         imagesc(t_image_tensor);
         axis image off;
-        title(['original data', p_image_label(t_answer + 1)]);
+        title(['original data', p_image_label(t_answer)]);
         
         subplot(2,1,2);
         imagesc(t_image_tensor2);
