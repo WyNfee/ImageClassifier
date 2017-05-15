@@ -1,8 +1,10 @@
 %This function is used to preprocess the data for image machine leanring
-%the idea is: center
+%the idea is: center and normalize
+%param:
+%p_input_data: the input data to do preprocessing
 %return:
 %r_data: the data used for image processing
-function r_data = function_Preprocess_data(p_input_data)
+function r_data = function_Preprocess_Data(p_input_data)
     %compute the mean of the data
     t_mean_data = mean(p_input_data, 2);
     
