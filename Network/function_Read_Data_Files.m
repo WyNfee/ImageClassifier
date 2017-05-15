@@ -18,7 +18,7 @@ function ...
     
     %Process the training data first
     %hard code the index here, the data file locates in Data directory
-    for i = 1 : 1%5
+    for i = 1 : 5
         t_data_file_name = sprintf('data_batch_%d.mat', i);
         t_data_file = load(t_data_file_name);
         t_data = t_data_file.data;

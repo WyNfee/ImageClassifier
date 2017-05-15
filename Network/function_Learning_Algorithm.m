@@ -5,7 +5,8 @@
 %output
 %r_learnt_weight: the weight learnt in this training data set
 %r_cost_history: the cost history used to plot learning performance
-function[r_learnt_weight, r_cost_history] = function_Learning_Algorithm(p_training_data, p_training_answer)
+%r_network_struct: the information about this learning algorithm
+function[r_learnt_weight, r_cost_history, r_network_struct] = function_Learning_Algorithm(p_training_data, p_training_answer)
     %set up architecture parameters
     t_layer_input_amount = 3072;
     t_layer_hidden_amount = 1000;
@@ -85,4 +86,12 @@ function[r_learnt_weight, r_cost_history] = function_Learning_Algorithm(p_traini
     
     r_learnt_weight = t_packed_weight_sgd;
     r_cost_history = t_record_cost_data;
+    
+    r_network_struct = struct(...
+        't_layer_input_amount', t_layer_input_amount,...
+        't_layer_hidden_amount', t_layer_hidden_amount,...
+        't_layer_output_amount', t_layer_output_amount,...
+        't_layer_input_weight_size', t_layer_input_weight_size,...
+        't_layer_hidden_weight_size', t_layer_hidden_weight_size...
+        );
   
