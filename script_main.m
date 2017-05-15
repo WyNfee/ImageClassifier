@@ -28,5 +28,5 @@ end
 [t_learnt_weight, t_cost_history, t_network_struct] = function_Learning_Algorithm(t_training_data, t_training_answer);
 
 %Check performance on test data
-%load('data_no_optimizer.mat')
 function_Check_Performance(t_training_data, t_training_answer, t_learnt_weight, t_network_struct);
+function_Check_Performance(t_test_data, t_test_answer, t_learnt_weight, t_network_struct);

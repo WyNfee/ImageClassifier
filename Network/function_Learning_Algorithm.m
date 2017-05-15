@@ -32,7 +32,7 @@ function[r_learnt_weight, r_cost_history, r_network_struct] = function_Learning_
     t_layer_hidden_weight_size = size(t_layer_hidden_weight);
 
     %a hyper parameter of regularization param, close the regularization here
-    t_reularization_param = 0;
+    t_reularization_param = 0.036;
 
     %assign the hyperparameter learning rate
     t_learning_rate = 0.01;
@@ -44,7 +44,7 @@ function[r_learnt_weight, r_cost_history, r_network_struct] = function_Learning_
     t_packed_weight_sgd  = t_packed_weight;
 
     %define the iteration time, 1000 * 100 times
-    t_iteration_time = 100000;
+    t_iteration_time = 10000;
 
     %record frequency
     t_record_frequency = 100;
