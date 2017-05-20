@@ -1,6 +1,6 @@
 %This function compute the weight regularization form of a sigmoid function
 %accept a 2D matrix of weight
-function r_regularized_form = function_Utils_SigmoidWeightRegularization(p_input_weight, p_input_data_amount, p_regularization_param)
+function r_regularized_form = function_L2_Weight_Regularization(p_input_weight, p_input_data_amount, p_regularization_param)
     %prepare the weight, we should not compute the bias (the first row)
     %Need to understand why we remove the first column:  
     

@@ -1,97 +1,102 @@
 %the core learning algorithm locate
 %param:
-%p_training_data: the training data set
-%p_training_answer: the training answer
+%p_x: the training data set
+%p_y: the training answer
 %output
-%r_learnt_weight: the weight learnt in this training data set
-%r_cost_history: the cost history used to plot learning performance
-%r_network_struct: the information about this learning algorithm
-function[r_learnt_weight, r_cost_history, r_network_struct] = function_Learning_Algorithm(p_training_data, p_training_answer)
-    %set up architecture parameters
-    t_layer_input_amount = 3072;
-    t_layer_hidden_amount = 1000;
-    t_layer_output_amount = 10;
+%r_w: the weight learnt in this training data set
+%r_c: the cost history
+%r_n: the network params
+function[r_w, r_c, r_n] = function_Learning_Algorithm(p_x, p_y)
+    %setup the network structure
+    t_n_i = 3072; %input neuron
+    t_n_c = 3; % the channel amount
+    t_n_k = 6; % the kernel amount for each channel
+    t_s_k = 3; % the size of each kernel
+    t_n_h = 1000;%the hidden neuron amount
+    t_n_o = 10;% the output neuron amount
     
-    %reorganize the answer data
-    t_input_answer = function_Build_Answer_Matrix(p_training_answer,t_layer_output_amount);
-    t_training_data_amount = size(t_input_answer, 1);
+    %some parameters extract from input data
+    t_x_m = size(p_x, 1);%the input data amount
+    t_y = function_Build_Answer_Matrix(p_y,t_n_o);%build the answer matrix for leanring algorithm
     
-    %init the weight for layer one
-    t_layer_input_input_size = t_layer_input_amount + 1;
-    t_layer_input_weight = function_XavierInitialization_For_ReLu(t_layer_input_input_size, t_layer_hidden_amount);
-
-    %init the weight for layer two
-    t_layer_hidden_input_size = t_layer_hidden_amount + 1;
-    t_layer_hidden_weight = function_XavierInitialization_For_ReLu(t_layer_hidden_input_size, t_layer_output_amount);
-
-    %pack the weigth together to compute the weight
-    t_packed_weight = [t_layer_input_weight(:); t_layer_hidden_weight(:)]; 
-
-    %provide the layer one and layer two size
-    t_layer_input_weight_size = size(t_layer_input_weight);
-    t_layer_hidden_weight_size = size(t_layer_hidden_weight);
-
-    %a hyper parameter of regularization param, close the regularization here
-    t_reularization_param = 0.036;
-
-    %assign the hyperparameter learning rate
-    t_learning_rate = 0.01;
-
-    %assgin the hyperparameter, stochasic data size
-    t_stochasitic_data_size = 50;
-
-    %a storage for weigth in sgd 
-    t_packed_weight_sgd  = t_packed_weight;
-
-    %define the iteration time, 1000 * 100 times
-    t_iteration_time = 10000;
-
-    %record frequency
-    t_record_frequency = 100;
-
-    %a cost data storage for further ploting
-    t_record_cost_data = zeros(t_iteration_time/t_record_frequency, 1);
-
-    %using momentum optimizer
-    t_momentum_param = 0.9;
-    t_momentum_updater = zeros(size(t_packed_weight_sgd));
-
-    %do gradient descent
-    for i = 1: t_iteration_time
+    %WEIGHT INITIALIZATION STARTS
+    
+    %init kernel and wrap to a kernel package
+    s_n_k = t_n_k * t_n_c; %all kernels we have
+    s_s_k = t_s_k .^ 2;
+    t_w_k = zeros(s_s_k , s_n_k);
+    for i = 1 : s_n_k
+        t_w_k(:, i) = function_XavierInitialization_For_ReLu(1, s_s_k);
+    end
+    t_w_k = t_w_k(:); % the kernel package structure is (s_n_k * s_s_k : 1) matrix, each s_s_k is a kernel
+    %the last s_n_k weights are used for bias
+    s_w_b = rand(s_n_k,1); %we don't use normal distrubtion for bias init, we expect a uniform distribution here
+    t_w_k = [t_w_k; s_w_b]; %weight for convolution layer complete
+    
+  
+    %init the weight for full connection to hidden layer after pooling process
+    t_n_p = ((sqrt(t_n_i / t_n_c) - t_s_k + 1 ) / 2).^2 * t_n_k * t_n_c; %the neuron amount after pooling process
+    t_w_h = function_XavierInitialization_For_ReLu(t_n_p + 1, t_n_h); %init the weight for full connection layer
+    
+    %init the weight for full connection to output layer
+    t_w_o = function_XavierInitialization_For_ReLu(t_n_h + 1, t_n_o);
+    
+    %Pack the weight in 1 container
+    t_w = [t_w_k(:); t_w_h(:)];
+    t_w = [t_w(:); t_w_o(:)];
+    
+    %put information for unpack here, the struct of weight
+    t_s_w = struct(...
+        't_n_c',t_n_c,...% amount of channel
+        't_n_k',t_n_k,...%amount of kernel
+        't_s_k', t_s_k,...%size of kernel
+        't_n_p', t_n_p,...%amount of neuron after pooling 
+        't_n_h', t_n_h,...%the amount neuron of hidden
+        't_n_o', t_n_o...%the amount neuron of output
+        );
+    
+    %WEIGHT INITIALIZATION ENDS
+    
+    %CORE TRAINING PROCESS STARTS
+    
+    %set up hyper parameters for machine learning
+    t_s_h_p = struct(...
+        't_l_r', 0.01, ...%the learning rate
+        't_l_r_d_f', 2100,...%the learning rate decay frequency
+        't_l_r_d_r', 0.8, ...%the learning rate decay rate
+        't_r_p', 0.1,... %the L2 regularization param
+        't_s_g_d', 50, ...%the sgd size
+        't_i_t', 100000, ...%the iteration times
+        't_r_f', 100 ...%the record frequency
+        );
+    
+   %the learnt weight
+    t_l_w = t_w;
+    
+    %do iterations
+    for i = 1 : t_s_h_p.t_i_t
         
-        %this will make the data always within [1:g_input_answer_amount]
-        t_rand_picked_data_index = floor(rand(1, t_stochasitic_data_size) * (t_training_data_amount - 1) ) + 1;
-        %generate stocastic data from dataset
-        t_rand_picked_data = p_training_data(t_rand_picked_data_index(1:end), :);
-        %provide the coresponding answer data as well
-        t_rand_picked_answer = t_input_answer(t_rand_picked_data_index(1:end), :);
-
-        %find the cost and gradient
-        [t_cost_param, t_gradient_param] = function_Compute_Cost_Gradient(t_packed_weight_sgd,t_rand_picked_data, t_rand_picked_answer, t_layer_input_weight_size, t_layer_hidden_weight_size, t_reularization_param);
+        %picked index
+        s_p_i = floor(rand(1, t_s_h_p.t_s_g_d) * (t_x_m - 1) ) + 1;
+       	s_p_x = p_x(s_p_i(1:end), :);
+        s_p_y = t_y(s_p_i(1:end), :);
         
-       %compute two main update parameter for adam
-        t_momentum_updater = t_momentum_param * t_momentum_updater + t_learning_rate * t_gradient_param;
-        t_packed_weight_sgd = t_packed_weight_sgd - t_momentum_updater;
+        [t_cost_param, t_gradient_param] = function_Compute_Cost_Gradient(t_l_w,s_p_x, s_p_y, t_s_w, t_s_h_p.t_r_p);
         
+        %simply compute the gradient
+        t_l_w = t_l_w - t_s_h_p.t_l_r * t_gradient_param;
+        
+        %decay the learning rate
+        if (rem( i, t_s_h_p.t_l_r_d_f) == 0)
+            t_s_h_p.t_l_r = t_s_h_p.t_l_r * t_s_h_p.t_l_r_d_r;
+        end
+            
         %output the cost to console every 100 iterate, so that we know
         %whether it is working, and the progress so far
-        if( rem(i, t_record_frequency) == 0)
-            %record the cost for plot
-            t_record_cost_data(i/t_record_frequency) = t_cost_param;
-            fprintf('update cost, current cost %.6f,\n',t_cost_param);
-        end
-        
+        fprintf('update cost, current cost %.6f,\n',t_cost_param);
         
     end
-    
-    r_learnt_weight = t_packed_weight_sgd;
-    r_cost_history = t_record_cost_data;
-    
-    r_network_struct = struct(...
-        't_layer_input_amount', t_layer_input_amount,...
-        't_layer_hidden_amount', t_layer_hidden_amount,...
-        't_layer_output_amount', t_layer_output_amount,...
-        't_layer_input_weight_size', t_layer_input_weight_size,...
-        't_layer_hidden_weight_size', t_layer_hidden_weight_size...
-        );
+
+    %CORE TRAINING PROCESS ENDS
+end
   
