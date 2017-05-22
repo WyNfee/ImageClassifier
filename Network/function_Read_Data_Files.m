@@ -39,6 +39,6 @@ function ...
     t_answer = t_data_file.labels +1;
     
     r_test_dataset = function_Preprocess_Data(t_data);
-    r_test_answer_set = t_answer+1;
+    r_test_answer_set = t_answer;
     
 end
