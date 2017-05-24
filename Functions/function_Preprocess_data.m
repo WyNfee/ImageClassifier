@@ -4,9 +4,9 @@
 %p_input_data: the input data to do preprocessing
 %return:
 %r_data: the data used for image processing
-function r_data = function_Preprocess_Data(p_x)
+function [r_data, r_mu, r_var] = function_Preprocess_Data(p_x)
     
     %for raw data processing, we don't do any shift
-    r_data = function_BatchNormalize(p_x, 1, 0);
-    
+    [r_data, r_mu, r_var] = function_BatchNormalize(p_x, 1, 0);
+
 end
