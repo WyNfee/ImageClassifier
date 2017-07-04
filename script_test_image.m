@@ -4,6 +4,11 @@ clear; close all; clc;
 load('learnt_weight.mat');
 load('training_mu_var.mat');
 
+addpath(genpath('Data'))
+addpath(genpath('Utils'))
+addpath(genpath('Functions'))
+addpath(genpath('Network'))
+
 t_n_i = 3072; %input neuron
 t_n_c = 3; % the channel amount
 t_n_k = 6; % the kernel amount for each channel
@@ -23,7 +28,7 @@ t_s_w = struct(...
     't_n_o', t_n_o...%the amount neuron of output
     );
 
-image = imread('3.jpg');
+image = imread('8.jpg');
 
 image(:,:,1) = image(:,:,1)';
 image(:,:,2) = image(:,:,2)';
